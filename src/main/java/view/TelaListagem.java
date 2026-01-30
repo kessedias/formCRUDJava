@@ -200,7 +200,7 @@ public class TelaListagem extends JFrame {
     // Classe para renderizar botões na tabela
     class ButtonRenderer extends JPanel implements javax.swing.table.TableCellRenderer {
         private JButton btnEditar = new JButton("Editar");
-        private JButton btnExcluir = new JButton("Excluir");
+        private JButton btnExcluir = new JButton("Deletar");
 
         public ButtonRenderer() {
             setLayout(new FlowLayout(FlowLayout.CENTER, 2, 0));
@@ -223,7 +223,7 @@ public class TelaListagem extends JFrame {
     class ButtonEditor extends DefaultCellEditor {
         private JPanel painel = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0));
         private JButton btnEditar = new JButton("Editar");
-        private JButton btnExcluir = new JButton("Excluir");
+        private JButton btnExcluir = new JButton("Deletar");
         private int idSelecionado;
         private TelaListagem tela;
 
