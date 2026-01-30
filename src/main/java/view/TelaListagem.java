@@ -101,8 +101,14 @@ public class TelaListagem extends JFrame {
         tabela.setModel(modeloTabela);
         tabela.setRowHeight(30);
 
-        // Adicionar botões na coluna de ações
+        // Garantir espaço para os botões de ação ficarem lado a lado
         int acaoColuna = Sessao.isAdmin() ? 7 : 5;
+        var colunaAcoes = tabela.getColumnModel().getColumn(acaoColuna);
+        boolean podeExcluir = Sessao.isAdmin() && Sessao.temPermissao("EXCLUIR_DADOS");
+        colunaAcoes.setPreferredWidth(podeExcluir ? 160 : 110);
+        colunaAcoes.setMinWidth(podeExcluir ? 150 : 100);
+
+        // Adicionar botões na coluna de ações
         tabela.getColumnModel().getColumn(acaoColuna).setCellRenderer(new ButtonRenderer());
         tabela.getColumnModel().getColumn(acaoColuna).setCellEditor(new ButtonEditor(new JCheckBox(), this));
     }
@@ -201,13 +207,17 @@ public class TelaListagem extends JFrame {
     class ButtonRenderer extends JPanel implements javax.swing.table.TableCellRenderer {
         private JButton btnEditar = new JButton("Editar");
         private JButton btnExcluir = new JButton("Deletar");
+        private boolean podeExcluir = Sessao.isAdmin() && Sessao.temPermissao("EXCLUIR_DADOS");
 
         public ButtonRenderer() {
-            setLayout(new FlowLayout(FlowLayout.CENTER, 2, 0));
-            if (Sessao.temPermissao("ATUALIZAR_DADOS")) {
-                add(btnEditar);
-            }
-            if (Sessao.isAdmin() && Sessao.temPermissao("EXCLUIR_DADOS")) {
+            setLayout(new FlowLayout(FlowLayout.CENTER, 4, 0));
+            setOpaque(true);
+            btnEditar.setMargin(new Insets(2, 8, 2, 8));
+            btnExcluir.setMargin(new Insets(2, 8, 2, 8));
+            btnEditar.setFocusPainted(false);
+            btnExcluir.setFocusPainted(false);
+            add(btnEditar);
+            if (podeExcluir) {
                 add(btnExcluir);
             }
         }
@@ -215,43 +225,53 @@ public class TelaListagem extends JFrame {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
+            setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
             return this;
         }
     }
 
     // Classe para editar/excluir na tabela
     class ButtonEditor extends DefaultCellEditor {
-        private JPanel painel = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0));
+        private JPanel painel = new JPanel(new FlowLayout(FlowLayout.CENTER, 4, 0));
         private JButton btnEditar = new JButton("Editar");
         private JButton btnExcluir = new JButton("Deletar");
         private int idSelecionado;
         private TelaListagem tela;
+        private boolean podeExcluir = Sessao.isAdmin() && Sessao.temPermissao("EXCLUIR_DADOS");
 
         public ButtonEditor(JCheckBox checkBox, TelaListagem tela) {
             super(checkBox);
             this.tela = tela;
 
-            if (Sessao.temPermissao("ATUALIZAR_DADOS")) {
-                painel.add(btnEditar);
-                btnEditar.addActionListener(e -> {
-                    fireEditingStopped();
-                    tela.editarUsuario(idSelecionado);
-                });
+            btnEditar.setMargin(new Insets(2, 8, 2, 8));
+            btnExcluir.setMargin(new Insets(2, 8, 2, 8));
+            btnEditar.setFocusPainted(false);
+            btnExcluir.setFocusPainted(false);
+
+            painel.setOpaque(true);
+            painel.add(btnEditar);
+            if (podeExcluir) {
+                painel.add(btnExcluir);
             }
 
-            if (Sessao.isAdmin() && Sessao.temPermissao("EXCLUIR_DADOS")) {
-                painel.add(btnExcluir);
-                btnExcluir.addActionListener(e -> {
-                    fireEditingStopped();
+            btnEditar.addActionListener(e -> {
+                fireEditingStopped();
+                tela.editarUsuario(idSelecionado);
+            });
+
+            btnExcluir.addActionListener(e -> {
+                fireEditingStopped();
+                if (podeExcluir) {
                     tela.excluirUsuario(idSelecionado);
-                });
-            }
+                }
+            });
         }
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                 boolean isSelected, int row, int column) {
             idSelecionado = (int) table.getValueAt(row, 0);
+            painel.setBackground(table.getSelectionBackground());
             return painel;
         }
 
