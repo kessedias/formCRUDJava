@@ -6,15 +6,9 @@ package model;
 
 import java.sql.Timestamp;
 
-public class Pessoa {
+public class Permissao {
     private int id;
     private String nome;
-    private String sobrenome;
-    private String email;
-    private String telefone;
-    private String login;
-    private String senha;
-    private String role; // "admin" ou "user"
     private int status; // 0 = inativo, 1 = ativo
     private Timestamp timecreated;
     private Timestamp timemodified;
@@ -24,24 +18,6 @@ public class Pessoa {
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
-
-    public String getSobrenome() { return sobrenome; }
-    public void setSobrenome(String sobrenome) { this.sobrenome = sobrenome; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getTelefone() { return telefone; }
-    public void setTelefone(String telefone) { this.telefone = telefone; }
-
-    public String getLogin() { return login; }
-    public void setLogin(String login) { this.login = login; }
-
-    public String getSenha() { return senha; }
-    public void setSenha(String senha) { this.senha = senha; }
-
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
 
     public int getStatus() { return status; }
     public void setStatus(int status) { this.status = status; }

@@ -4,14 +4,12 @@
  */
 package app;
 
-
 import seed.DatabaseSeed;
-import view.FormCRUD;
+import view.TelaLogin;
 
 public class Main {
     public static void main(String[] args) {
         DatabaseSeed.run();
-        new FormCRUD().setVisible(true);
+        new TelaLogin().setVisible(true);
     }
 }
-
