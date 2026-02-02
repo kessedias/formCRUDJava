@@ -8,6 +8,9 @@ import config.Conexao;
 import model.Pessoa;
 import seed.DatabaseSeed;
 import java.sql.*;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +32,7 @@ public class PessoaDAO {
             ps.setString(3, p.getEmail());
             ps.setString(4, p.getTelefone());
             ps.setString(5, p.getLogin());
-            ps.setString(6, p.getSenha());
+            ps.setString(6, hashSenha(p.getSenha()));
             ps.setString(7, p.getRole());
             ps.setInt(8, p.getStatus());
             ps.execute();
@@ -87,7 +90,7 @@ public class PessoaDAO {
              PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setString(1, login);
-            ps.setString(2, senha);
+            ps.setString(2, hashSenha(senha));
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -180,7 +183,7 @@ public class PessoaDAO {
             ps.setString(3, p.getEmail());
             ps.setString(4, p.getTelefone());
             ps.setString(5, p.getLogin());
-            ps.setString(6, p.getSenha());
+            ps.setString(6, hashSenha(p.getSenha()));
             ps.setString(7, p.getRole());
             ps.setInt(8, p.getStatus());
             ps.setInt(9, p.getId());
@@ -230,5 +233,22 @@ public class PessoaDAO {
         p.setTimecreated(rs.getTimestamp("timecreated"));
         p.setTimemodified(rs.getTimestamp("timemodified"));
         return p;
+    }
+
+    private static String hashSenha(String senha) {
+        if (senha == null) {
+            return null;
+        }
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(senha.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder(digest.length * 2);
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("MD5 algorithm not available", e);
+        }
     }
 }
